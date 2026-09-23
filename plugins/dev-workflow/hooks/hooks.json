@@ -1,0 +1,17 @@
+{
+  "description": "Enforces the dev-workflow rules that text alone keeps missing: destructive git, attribution trailers, work-item ids and comment density in commits, review-request format, tracker ASCII, forbidden models, edits before plan approval.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|NotebookEdit|Agent|Task|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.py\" 2>/dev/null || python \"${CLAUDE_PLUGIN_ROOT}/hooks/guard.py\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

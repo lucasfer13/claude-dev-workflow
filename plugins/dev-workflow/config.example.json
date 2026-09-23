@@ -1,0 +1,16 @@
+{
+  "work_item": {
+    "prefix": "PROJ",
+    "required": false,
+    "mcp_server": null,
+    "ascii_only": false
+  },
+  "review_request": {
+    "tool": "gh",
+    "mcp_server": null,
+    "title_format": "{id} - {subject}",
+    "sections": ["Summary", "QA", "Tests"]
+  },
+  "versioning": "semver",
+  "forbidden_models": []
+}

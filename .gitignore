@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.leak-terms
+GENERICIZE-SPEC.md
+scripts/patch_*.py
