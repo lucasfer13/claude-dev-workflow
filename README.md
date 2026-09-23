@@ -74,6 +74,31 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 
 A project-level `CLAUDE.md` or project skills always win over these rules.
 
+## Plugin 2 — `product-planning`
+
+From an idea to a backlog the development workflow can execute, with three documents in
+`docs/product/<slug>/` and an approval gate after each:
+
+```
+/product-scope → interview in rounds → PRODUCT.md   (vision, roles, scope in/out, MVP, features with
+                                                      stories + Given/When/Then, NFRs, entities)
+/product-plan  → solution-architect asks → TECHNICAL.md (decisions, architecture, data model with
+                                                      fields + ER diagram, integrations, permissions)
+               → delivery-manager       → BACKLOG.md (epics → stories → tasks, S/M/L/XL, agent-ready
+                                                      or human, dependencies, goal-based sprints)
+```
+
+- The main conversation asks; the agents (`product-analyst`, `solution-architect`, `delivery-manager`)
+  write the documents and return the next questions as options. Nothing inferred becomes content.
+- Stable ids trace everything: `F-03` → `US-03.2` → `T-03.2.1`, entities `E-…`, decisions `D-…`.
+  Documents are versioned; a change replans only what it touches.
+- `agent-ready` tasks fit one development: `/dev-task T-03.2.1`.
+- Optional: create the approved backlog as issues in the tracker configured in `dev-workflow.json`.
+
+```
+/plugin install product-planning@lucasfer13
+```
+
 ## Development
 
 ```

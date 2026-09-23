@@ -1,0 +1,9 @@
+{
+  "name": "product-planning",
+  "version": "0.1.0",
+  "description": "Product discovery to backlog: an interview that defines scope feature by feature (PRODUCT.md), a solution architect that designs the system and data model (TECHNICAL.md), and a delivery manager that builds an agile backlog with agent-ready tasks (BACKLOG.md), each behind an approval gate.",
+  "author": { "name": "lucasfer13" },
+  "homepage": "https://github.com/lucasfer13/claude-dev-workflow",
+  "license": "MIT",
+  "keywords": ["product", "scope", "prd", "backlog", "agile", "sprints", "architecture", "data-model"]
+}

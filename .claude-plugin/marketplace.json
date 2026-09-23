@@ -1,7 +1,11 @@
 {
   "name": "lucasfer13",
-  "owner": { "name": "lucasfer13" },
-  "metadata": { "description": "Claude Code plugins by lucasfer13." },
+  "owner": {
+    "name": "lucasfer13"
+  },
+  "metadata": {
+    "description": "Claude Code plugins by lucasfer13."
+  },
   "plugins": [
     {
       "name": "dev-workflow",
@@ -9,6 +13,13 @@
       "description": "Evidence-gated development workflow: architects that ask before deciding, TDD implementers, reviewer, approval gates, per-phase criteria, checkpoints and a guard hook.",
       "version": "0.1.0",
       "category": "development"
+    },
+    {
+      "name": "product-planning",
+      "source": "./plugins/product-planning",
+      "description": "Product discovery to backlog: scope interview (PRODUCT.md), technical design with data model (TECHNICAL.md), agile backlog with agent-ready tasks (BACKLOG.md), each behind an approval gate.",
+      "version": "0.1.0",
+      "category": "productivity"
     }
   ]
 }
