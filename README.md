@@ -74,35 +74,58 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 
 A project-level `CLAUDE.md` or project skills always win over these rules.
 
-## Plugin 2 — `product-planning`
+## Plugin 2 — `blueprint`
 
-From an idea to a backlog the development workflow can execute, with three documents in
-`docs/product/<slug>/` and an approval gate after each:
-
-```
-/product-scope → interview in rounds → PRODUCT.md   (vision, roles, scope in/out, MVP, features with
-                                                      stories + Given/When/Then, NFRs, entities)
-/product-plan  → solution-architect asks → TECHNICAL.md (decisions, architecture, data model with
-                                                      fields + ER diagram, integrations, permissions)
-               → delivery-manager       → BACKLOG.md (epics → stories → tasks, S/M/L/XL, agent-ready
-                                                      or human, dependencies, goal-based sprints)
-```
-
-- The main conversation asks; the agents (`product-analyst`, `solution-architect`, `delivery-manager`)
-  write the documents and return the next questions as options. Nothing inferred becomes content.
-- Stable ids trace everything: `F-03` → `US-03.2` → `T-03.2.1`, entities `E-…`, decisions `D-…`.
-  Documents are versioned; a change replans only what it touches.
-- `agent-ready` tasks fit one development: `/dev-task T-03.2.1`.
-- Optional: create the approved backlog as issues in the tracker configured in `dev-workflow.json`.
+From an idea — or a new feature for an existing project — to a backlog the development workflow can
+execute. `/blueprint` is the hub: it shows the state of every phase, asks which one to do, and resumes
+or completes any of them.
 
 ```
-/plugin install product-planning@lucasfer13
+/blueprint-scope   → product-analyst       → PRODUCT.md    vision, roles, scope, MVP, features with AC-ids, NFRs, glossary
+/blueprint-tech    → project architect      → TECHNICAL.md  decisions, data model + ER, integrations, permissions,
+                     | stack architects                     test strategy, threats, rollout, spikes
+                     | solution-architect
+/blueprint-design  → ux-designer + canvas   → DESIGN.md     flows, screens with every state, components, WCAG 2.2 AA
+                                                            (or an explicit "no UI" skip)
+/blueprint-backlog → delivery-manager       → BACKLOG.md    epics → stories → tasks with context pack,
+                                                            Ready when, Done when; goal-based sprints
+after every phase  → /blueprint-review: lint + a fresh blueprint-reviewer, cross-checked against every
+                     earlier doc, fixes to each owner and decisions to you, until 0 BLOCKER / MAJOR
 ```
+
+- **You decide everything.** Every agent returns options; answers go to `DECISIONS.md` and are never
+  asked twice.
+- **New product or evolution.** Evolutions live in `docs/blueprint/<project>/evolutions/<evo>/` as deltas
+  against the base docs and are merged into them on your approval. The technical and design phases go
+  to the project's own architect / designer when it has them.
+- **Tasks written for a clean session.** Each agent-ready task carries only the facts it needs, where
+  to touch the code, what its dependencies leave behind, what is out of scope, the checks that make it
+  ready and the evidence that makes it done. `/dev-task T-03.2.1` briefs from the pack and records the
+  outcome in `PROGRESS.md`.
+- **Deterministic harness.** `blueprint_lint.py` checks ids, references, coverage (F → US, AC → task →
+  test, MVP feature → screen, screen field → data model), sizes, dependency cycles, pack completeness,
+  approvals by hash, and lists stale items after an upstream change. Hooks deny edits to an approved doc
+  without a version bump and phases out of order, ask before merging an evolution, and lint every write.
+- **Changes** go through `/blueprint-change`: impact by ids, cascade to stale items only, re-approval of
+  only what changed.
+- **Online.** A shared doc (through the host's first-party document connector, e.g. Claude Docs) the
+  team edits and comments on — every edit and comment comes back as a proposal you accept or reject
+  before any doc changes — plus a read-only dashboard page: phase status, traceability matrix, sprints,
+  burn-up, open findings.
+- Checkpoints in `~/.claude/dev-state/` like the development workflow; `/dev-resume` lists them.
+
+```
+/plugin install blueprint@lucasfer13
+```
+
+Replaces `product-planning` (uninstall it). Documents moved from `docs/product/<slug>/` to
+`docs/blueprint/<project>/`.
 
 ## Development
 
 ```
 python tests/test_guard.py     # guard cases against a throwaway repo
+python tests/test_blueprint.py # blueprint lint and hooks against the fixture
 scripts/leak-check.sh          # run before every push
 ```
 

@@ -1,0 +1,23 @@
+{
+  "name": "blueprint",
+  "version": "0.2.0",
+  "description": "From idea or new feature to an executable backlog: product definition, technical design routed to the project's own architect, UX/UI design with a Claude Design canvas, and a backlog whose tasks carry a self-sufficient context pack, Ready when and Done when. A fresh reviewer cross-checks every phase against the earlier ones until clean; deterministic lint and guard hooks; checkpoints; a shared online doc for team edits and comments plus a read-only dashboard.",
+  "author": {
+    "name": "lucasfer13"
+  },
+  "homepage": "https://github.com/lucasfer13/claude-dev-workflow",
+  "license": "MIT",
+  "keywords": [
+    "product",
+    "scope",
+    "prd",
+    "ux",
+    "design",
+    "backlog",
+    "agile",
+    "sprints",
+    "architecture",
+    "data-model",
+    "evolution"
+  ]
+}

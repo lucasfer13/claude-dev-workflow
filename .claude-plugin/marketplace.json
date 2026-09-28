@@ -11,14 +11,14 @@
       "name": "dev-workflow",
       "source": "./plugins/dev-workflow",
       "description": "Evidence-gated development workflow: architects that ask before deciding, TDD implementers, reviewer, approval gates, per-phase criteria, checkpoints and a guard hook.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "development"
     },
     {
-      "name": "product-planning",
-      "source": "./plugins/product-planning",
-      "description": "Product discovery to backlog: scope interview (PRODUCT.md), technical design with data model (TECHNICAL.md), agile backlog with agent-ready tasks (BACKLOG.md), each behind an approval gate.",
-      "version": "0.1.0",
+      "name": "blueprint",
+      "source": "./plugins/blueprint",
+      "description": "Idea or new feature to executable backlog: product, technical, UX/UI (Claude Design) and backlog phases with context-packed tasks, a consistency reviewer after every phase, lint + guard hooks, checkpoints, online doc and dashboard.",
+      "version": "0.2.0",
       "category": "productivity"
     }
   ]
