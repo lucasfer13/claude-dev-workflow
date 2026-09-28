@@ -1,0 +1,29 @@
+{
+  "description": "Blueprint gates: approved docs change only through a version bump, phases in order (product → technical → design or skipped → backlog), ask before merging an evolution into the base, quick lint after every doc write.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/blueprint_guard.py\" 2>/dev/null || python \"${CLAUDE_PLUGIN_ROOT}/hooks/blueprint_guard.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/blueprint_guard.py\" 2>/dev/null || python \"${CLAUDE_PLUGIN_ROOT}/hooks/blueprint_guard.py\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}
