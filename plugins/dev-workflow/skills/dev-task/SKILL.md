@@ -96,6 +96,20 @@ just say "continúa con la PROJ-123"). The approval gates are unchanged.
    rules in `release-and-review.md` §12 and §16; the guard hook rejects a malformed one). No
    publisher agent unless the user asks for it.
 
+## Blueprint tasks
+
+`$ARGUMENTS` is a blueprint task id (`T-03.2.1`) or the user names one → find it in
+`docs/blueprint/**/BACKLOG.md` (or `backlog/EP-xx.md`).
+- The **context pack is the brief** to the architect, as written — do not load the blueprint documents
+  unless the pack anchors one. The task's `Ready when` is checked first; an unchecked item → stop and
+  say which.
+- Its `Done when` lines are added to the acceptance criteria of the closing transitions (GREEN and
+  gate #2), each with its evidence.
+- On start and on closing, write the task's row in the blueprint's `PROGRESS.md` (`in-progress` →
+  `done` with branch, review request link, `Done-when n/n`, date) and print `TASK → DONE`. Never edit
+  BACKLOG.md from a development.
+- The same applies when the pack names a project's own entry skill instead of this one.
+
 ## Non-negotiables
 
 - Checkpoint written before every mutating phase, and immediately when blocked. `Next Action` is

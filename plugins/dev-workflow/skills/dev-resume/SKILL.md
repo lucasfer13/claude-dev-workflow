@@ -45,6 +45,10 @@ ls ~/.claude/dev-state/<repo-key>/
 - **No checkpoint at all** → say so plainly and offer to start the development normally (which
   creates one). Do not fabricate a recovered state.
 
+- **Blueprint checkpoints** (`kind: blueprint`, `blueprint-<project>…`) are listed with the others,
+  labelled `blueprint`; resuming one hands over to `/blueprint`, which reads it (§1.3) — no git
+  reconciliation beyond the docs' own versions.
+
 `<id>.trace.md` files are the trace of a development, not developments — skip them when listing.
 `completed` and `cancelled` developments are never offered as active; mention them only if the user
 asks for history.

@@ -1,9 +1,20 @@
 {
   "name": "dev-workflow",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Evidence-gated development workflow for Claude Code: stack-routed architects that ask before deciding, TDD implementers, reviewer, two human approval gates, per-phase acceptance criteria, persistent checkpoints with a trace page, and a PreToolUse guard.",
-  "author": { "name": "lucasfer13" },
+  "author": {
+    "name": "lucasfer13"
+  },
   "homepage": "https://github.com/lucasfer13/claude-dev-workflow",
   "license": "MIT",
-  "keywords": ["workflow", "tdd", "agents", "code-review", "checkpoints", "dotnet", "react", "android"]
+  "keywords": [
+    "workflow",
+    "tdd",
+    "agents",
+    "code-review",
+    "checkpoints",
+    "dotnet",
+    "react",
+    "android"
+  ]
 }
