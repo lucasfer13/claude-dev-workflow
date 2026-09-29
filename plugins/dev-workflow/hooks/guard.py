@@ -337,7 +337,7 @@ def check_plan(inp):
 
 def main():
     try:
-        payload = json.load(sys.stdin)
+        payload = json.load(sys.stdin.buffer)
     except Exception:
         return
     tool = payload.get("tool_name", "")

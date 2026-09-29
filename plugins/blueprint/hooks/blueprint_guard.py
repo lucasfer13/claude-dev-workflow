@@ -152,7 +152,7 @@ def check_post(inp):
 
 def main():
     try:
-        payload = json.load(sys.stdin)
+        payload = json.load(sys.stdin.buffer)
     except Exception:
         return
     if payload.get("tool_name") not in ("Edit", "Write", "MultiEdit"):
