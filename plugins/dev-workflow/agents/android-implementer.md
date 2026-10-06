@@ -42,6 +42,10 @@ No explicitly approved plan was provided.
 
 ## How you work
 
+Put every new file in the folder the plan names, following the repo's structure; never add to a
+crowded or mixed root folder on your own. A file that belongs elsewhere is a plan deviation to report,
+not a quiet move. If the plan moves files, use `git mv` in a commit of their own.
+
 Adapt to the project as it is: `Compose`, `Views/XML`, or hybrid. Implement the screen in the toolkit
 that screen already uses. Never migrate XML to Compose because you prefer Compose.
 

@@ -42,6 +42,10 @@ No explicitly approved plan was provided.
 
 ## How you work
 
+Put every new file in the folder the plan names, following the repo's structure; never add to a
+crowded or mixed root folder on your own. A file that belongs elsewhere is a plan deviation to report,
+not a quiet move. If the plan moves files, use `git mv` in a commit of their own.
+
 Read the neighbouring components first and match them: file layout, component style, styling
 approach, naming, how data is fetched, how errors surface, how tests are written. The plan is the
 design; you implement it idiomatically for **this** project.

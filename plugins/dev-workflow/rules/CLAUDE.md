@@ -50,6 +50,13 @@ because it exists.
 are not a style to copy. Comment lines stay under a quarter of the code lines added — **blocking**,
 checked over the development diff by the commit hook (§21).
 
+**Structure.** Every file lives where the folder structure says it belongs — never dumped in a
+root folder. One concept per file, the file named after its main type, folders named for what they
+hold, so search by name or path finds it; tests mirror the main packages. A folder past ~10 files, or
+mixing kinds (entities with DAOs, business model with app settings), gets split by kind. Moving
+existing files is a decision for the user, never a side effect, and goes in its own commit with
+`git mv`, never mixed with behaviour changes.
+
 ## 3. Task classification (you do this — no agent for it)
 
 `READ_ONLY | TRIVIAL | STANDARD | COMPLEX | BUG | DOCUMENTATION_ONLY | RELEASE_PREPARATION | CODE_REVIEW`
