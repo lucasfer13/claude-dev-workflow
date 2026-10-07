@@ -16,7 +16,10 @@ doc, and always before the backlog gate.
 2. **Changed ids** since the last round: the `changed:` ids of changelog lines newer than REVIEW.md's
    last round. Empty or `full` → everything.
 3. **Reviewer**: a **fresh** `blueprint-reviewer` every round (`blueprint:blueprint-reviewer`) — never
-   resumed. Brief: root, scope, changed ids, lint output, contract path, base root, repo paths. Create
+   resumed. Brief: root, scope, changed ids, lint output, contract path, base root, repo paths; the reviewer
+   reads only the open RV rows and the last round row of REVIEW.md (closed rows in
+   REVIEW-archive.md, by id only on a suspected regression) and changed docs with
+   `git diff --word-diff=plain -U0 -- <doc>`, never whole. Create
    REVIEW.md from `<this skill's directory>/templates/REVIEW.md` if missing.
 4. **Route**:
    - `fix` → the owner agent of that doc, with the finding verbatim. An approved doc → status draft
@@ -24,6 +27,9 @@ doc, and always before the backlog gate.
    - `decision` → the user with `AskUserQuestion` (options as given); record `Q-xx`; the owner applies it.
    - MINOR → fixed with the rest, or the user accepts it (`accepted`).
 5. Print `Revisión ronda <n> · lint <e>/<w>/<s> · BLOCKER <n> · MAJOR <n> · MINOR <n> · corregidos <n>`.
+
+When the last round left only MINOR findings, the main thread verifies their fixes with lint + grep;
+no new reviewer round.
 
 Repeat until the reviewer returns `CLEAN` and lint has 0 errors, 0 stale. **Every 3 rounds without
 reaching CLEAN**, stop and ask the user: continue, accept the remaining ones as they are (MAJOR only

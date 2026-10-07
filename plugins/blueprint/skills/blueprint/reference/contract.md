@@ -147,7 +147,11 @@ COVERAGE:
 - ✔/✘ <gate criterion> · <evidence: ids, counts>
 ```
 
-- At most 4 questions a round, highest impact first, 2-4 options, never a default, never one
-  already in DECISIONS.md. What the user's words already answer is not a question.
+- All open questions in one round, highest impact first (only a question whose options depend on
+  another's answer waits for the next round), 2-4 options, never a default, never one already in
+  DECISIONS.md. What the user's words already answer is not a question.
 - Anything inferred and not said is a question, never content.
-- Docs are written in the user's language, terse: tables over prose, one line per rule.
+- Hand-back ≤ 15 lines unless STATUS is NEEDS_USER_INPUT: status, DOC v, changed ids, counts, paths.
+  COVERAGE detail goes in the doc, not the hand-back.
+- Docs are written in the user's language, terse: tables over prose, one line per rule. A table row
+  ≤ 400 chars; longer content goes in bullets under the id's heading.

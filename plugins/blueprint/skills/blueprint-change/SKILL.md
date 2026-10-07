@@ -12,6 +12,11 @@ description: Change request on an approved blueprint document — impact analysi
 2. **Impact**: the ids the change touches in its doc; then what cites them downstream (lint
    `--json` → `items[*].cites`). Show `CR-xx · <doc> · <ids> → stale: <downstream ids>` and ask the user
    to approve the CR. Rejected → `rejected` with the reason; stop.
+   Stop and ask before approving the CR when it touches a feature not planned in the current or next
+   sprint (post-MVP), or would reopen more than 5 decisions or the ACs of more than one feature.
+   Options: (a) record only the new facts (spike result, constraint) and mark the rest `deferred` in
+   CHANGES.md; (b) re-enter the phase in its own session; (c) continue now. Quote the measured cost of
+   the last comparable CR.
 3. **Apply upstream first**: the owner agent of the first affected doc sets status draft, bumps the
    version, changes only those ids, changelog `changed: <ids>`.
 4. **Cascade**: lint lists stale items per downstream doc; each owner revisits only those, updates
