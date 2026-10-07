@@ -181,11 +181,12 @@ resolve incompatibilities.
 plan, the repo's constraints. Never restate the plan; the agent reads it. A long brief only for risky
 work: a live environment, credentials, someone else's code.
 
-**Resume or start fresh.** Resume the same agent inside a loop that moves in minutes — research,
-planning questions, a fix right after its own report — it keeps its reasoning and its cache is warm.
-Once the plan is in a file and a change arrives late (after review, in another session), start a
-**fresh** agent with the plan, the findings and the exact files: a resumed agent pays its whole old
-context again.
+**Resume or start fresh — by cache warmth, not size.** Resume (SendMessage) only when the agent's last
+hand-back is under 5 minutes old: its prompt cache is warm and a resume costs a few turns. Past 5
+minutes the cache has expired and a resume re-writes the agent's whole context; start a **fresh**
+agent instead with a file brief (doc paths, the ids, the Q-/RV- rows to apply), unless its context is
+under ~40k. Collect the questions of every running agent and ask them together (consecutive
+`AskUserQuestion` calls) before resuming any.
 
 ### Research loop
 The architect returns `STATUS: NEEDS_RESEARCH` + `RESEARCH_REQUESTS` + `WHY` → resume the same
@@ -399,6 +400,9 @@ After `code-reviewer`: no CRITICAL or IMPORTANT findings → done. Otherwise
 `MAX_REVIEW_FIX_LOOPS = 2`, then stop and show the user the outstanding findings. If a fix changes
 the plan materially, invalidate the approval and go back to the architect.
 
+A re-review after fixes is scoped to the fix diff (`git diff <reviewed-sha>..HEAD`) plus the open
+findings, may run on sonnet, and is skipped when the previous round had only IMPROVEMENT/NIT.
+
 For non-trivial changes run `documentation-release-maintainer` **after GREEN and before the final
 review**, so the reviewer also sees comments, OpenAPI, changelog and version metadata.
 
@@ -462,6 +466,9 @@ and trace format only when in doubt: `checkpoint-schema.md` in the same folder.
 checkpoint exists.** Git is the truth for code, the checkpoint for workflow, decisions and approvals;
 never mutate the repo to force a match; material drift → STOP with `CHECKPOINT_DRIFT_DETECTED`. An
 approval survives the session change while the plan fingerprint matches.
+
+One workstream per session: after a gate or closure, continue in a new session from the checkpoint;
+never reopen a long session for an unrelated request.
 
 ## 21. Phase transitions — acceptance criteria and trace
 
