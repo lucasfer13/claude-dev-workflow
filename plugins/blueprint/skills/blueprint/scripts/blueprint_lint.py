@@ -3,6 +3,17 @@
   blueprint_lint.py <root> [--quick] [--json]   lint; exit 1 on errors
   blueprint_lint.py --approve <doc.md>          full lint, then record the approval in the frontmatter
   blueprint_lint.py --hash <doc.md>             print the body hash
+
+Archives: REVIEW-archive.md / DECISIONS-archive.md in the root are read as REVIEW.md / DECISIONS.md
+(ids defined or cited there count; closed rows can move without dangling refs).
+
+Hygiene rules on the body of PRODUCT/TECHNICAL/DESIGN/BACKLOG (+ backlog/EP-*.md); changelog lines
+('- v<n> · ...') are exempt from all of them:
+  long-line       WARN   line over 600 characters
+  placeholder     ERROR  T-<n>.n, 'AC nuevo', TBD, 'pendiente de pregunta'
+  retired-term    WARN   a term still present that a CHANGES.md row retired. Syntax, inside the Request
+                         or Impact cell:  retired: "term1", "term2"   (case-insensitive substring)
+  anchor-past-eof WARN   '<Doc>.md L123' / '<Doc>.md:123' / 'L123-130' beyond the last line of that file
 """
 import hashlib
 import json
@@ -24,6 +35,14 @@ UPSTREAM = {"TECHNICAL.md": ["PRODUCT.md"], "DESIGN.md": ["PRODUCT.md", "TECHNIC
             "BACKLOG.md": ["PRODUCT.md", "TECHNICAL.md", "DESIGN.md"]}
 PACK = ["Goal", "Facts", "Where", "From dependencies", "Conventions", "Out of scope"]
 PACK_MAX_WORDS = 400
+ARCHIVES = {"REVIEW-archive.md": "REVIEW.md", "DECISIONS-archive.md": "DECISIONS.md"}
+BODY_DOCS = ("PRODUCT.md", "TECHNICAL.md", "DESIGN.md", "BACKLOG.md")
+LONG_LINE = 600
+CHANGELOG_RE = re.compile(r"^\s*- v\d+ · ")
+PLACEHOLDER_RE = re.compile(r"T-\d+\.n\b|\bAC nuevo\b|\bTBD\b|pendiente de pregunta")
+RETIRED_RE = re.compile(r"retired:\s*((?:[\"“][^\"”]*[\"”](?:\s*,\s*)?)+)")
+ANCHOR_RE = re.compile(r"\b(PRODUCT|TECHNICAL|DESIGN|BACKLOG|DECISIONS|REVIEW|CHANGES|PROGRESS)\.md"
+                       r"[ (:,]{0,3}?(?:(?<![A-Za-z0-9])L(\d+)(?:[-–]L?(\d+))?|:(\d+))")
 
 
 def kind(i):
@@ -74,7 +93,10 @@ class Doc:
     def __init__(self, path, base=False):
         self.path = path
         self.name = path.name if path.parent.name != "backlog" else "BACKLOG.md"
-        self.fm, self.body, self.offset = split_doc(path.read_text(encoding="utf-8-sig"))
+        self.name = ARCHIVES.get(self.name, self.name)
+        raw = path.read_text(encoding="utf-8-sig")
+        self.total = len(raw.replace("\r\n", "\n").split("\n")) - (1 if raw.endswith("\n") else 0)
+        self.fm, self.body, self.offset = split_doc(raw)
         self.lines = self.body.splitlines()
         self.base = base
 
@@ -99,12 +121,54 @@ class Lint:
 
     @staticmethod
     def load(root, base=False):
-        docs = [Doc(root / n, base) for n in DOCS if (root / n).exists()]
+        docs = [Doc(root / n, base) for n in DOCS + list(ARCHIVES) if (root / n).exists()]
         docs += [Doc(p, base) for p in sorted((root / "backlog").glob("EP-*.md"))] if (root / "backlog").is_dir() else []
         return docs
 
     def add(self, level, code, where, msg):
         self.out.append((level, code, where, msg))
+
+    # ---------- hygiene ----------
+    def hygiene(self):
+        retired = self.retired_terms()
+        lengths = {d.name: d.total for d in self.docs if d.path.name == d.name}
+        for d in self.docs:
+            if d.name not in BODY_DOCS:
+                continue
+            for i, line in enumerate(d.lines):
+                if CHANGELOG_RE.match(line):
+                    continue
+                if len(line) > LONG_LINE:
+                    self.add("WARN", "long-line", d.at(i), f"{len(line)} characters > {LONG_LINE}")
+                header = i + 1 < len(d.lines) and line.startswith("|") and SEP_RE.match(d.lines[i + 1])
+                m = None if header else PLACEHOLDER_RE.search(line)
+                if m:
+                    self.add("ERROR", "placeholder", d.at(i), f"placeholder '{m.group(0)}'")
+                low = line.lower()
+                for term in retired:
+                    if term.lower() in low:
+                        self.add("WARN", "retired-term", d.at(i), f"retired term '{term}' still used")
+                for m in ANCHOR_RE.finditer(line):
+                    n = m.group(1) + ".md"
+                    nums = [int(x) for x in m.groups()[1:] if x]
+                    if n in lengths and max(nums) > lengths[n]:
+                        self.add("WARN", "anchor-past-eof", d.at(i), f"{m.group(0).strip()} points past the end of {n} ({lengths[n]} lines)")
+
+    def retired_terms(self):
+        c = self.doc("CHANGES.md")
+        terms, cols = [], {}
+        for line in (c.lines if c else []):
+            if not line.startswith("|") or SEP_RE.match(line):
+                continue
+            cells = [x.strip() for x in line.strip().strip("|").split("|")]
+            if not cols:
+                cols = {j for j, h in enumerate(cells) if h.lower().startswith(("request", "impact"))}
+                continue
+            for j, cell in enumerate(cells):
+                if j in cols:
+                    for m in RETIRED_RE.finditer(cell):
+                        terms += re.findall(r"[\"“]([^\"”]*)[\"”]", m.group(1))
+        return [t for t in dict.fromkeys(terms) if t.strip()]
 
     def doc(self, name):
         return next((d for d in self.docs if d.name == name and d.path.name == name), None)
@@ -417,6 +481,7 @@ class Lint:
             self.design()
             self.backlog()
             self.cascade()
+            self.hygiene()
         return self.out
 
     def model(self):
