@@ -52,6 +52,9 @@ with personal taste, and do not demand a pattern the project does not use.
 
 ## What to look for
 
+**File placement.** Flag a new file in the wrong or an overcrowded folder, a mixed folder, or a move
+bundled with behaviour changes: IMPROVEMENT, or IMPORTANT when it breaks an architecture rule.
+
 **Review the risk, not the diff.** Read the new and changed **production** files and the seams they
 touch. Skim tests only to judge whether the change is covered — never line by line; they are usually
 the largest and least dangerous part of a diff. A renamed symbol propagated across twenty call sites

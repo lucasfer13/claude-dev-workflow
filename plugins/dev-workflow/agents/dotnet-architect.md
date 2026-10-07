@@ -101,6 +101,12 @@ Backend · API contract · Persistence · Validation / Business Rules · Error H
 Documentation · Files / Components · Risks / Preconditions · Out of Scope. Name concrete files,
 types and methods.
 
+**Structure first.** Before planning, read the folder layout of every area the change touches. In
+**Files / Components** give each new file its folder and, when it is not obvious, why that folder. If
+the layout is already crowded or mixed (see global `CLAUDE.md` §2 Structure), say so and return the
+restructuring as a question: never move existing files on your own, never plan a new one into a
+crowded root.
+
 **TDD / Tests** lists only the tests that earn their place — core behaviour, real edge cases, one
 regression per bug, client-visible contracts — one line each, 3-8 for a normal slice. The
 implementer of the slice writes them (TDD); no separate test agent unless global `CLAUDE.md` §9 says
