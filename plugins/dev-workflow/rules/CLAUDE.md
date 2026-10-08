@@ -506,7 +506,8 @@ Next: code-reviewer on develop...HEAD
   criteria when closing it. It never crosses a human gate. It returns **one block per phase**.
 - Block format: `Done · Criteria · Review · Next` (+ `Agent`, `Attempts`). 3-8 criteria, one line
   each, no logs. "Review" = commands and shas only. Human gates print it before asking.
-- **Trace** (§19): each block is appended to `<id>.trace.md`; the artifact is republished only at
+- **Trace** (§19): each block is appended to `<id>.trace.md`; the entry starts with
+  `## <YYYY-MM-DD HH:mm> · FROM → TO`, never the printed `▶` line; the artifact is republished only at
   gate #1, gate #2, closure, and any stop on a ✘. One line also goes to the checkpoint's `## Transitions`:
   `<YYYY-MM-DD HH:mm> FROM → TO · n/n ✔ · key evidence`.
 - **Harness.** The plugin's PreToolUse hook denies what text rules keep missing: force-push,
