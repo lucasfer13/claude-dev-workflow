@@ -81,6 +81,9 @@ status: active                        # active | waiting_user | blocked | comple
 phase: implementation                 # see the phase list below
 task_class: STANDARD                  # READ_ONLY | TRIVIAL | STANDARD | COMPLEX | BUG
                                       # | DOCUMENTATION_ONLY | RELEASE_PREPARATION | CODE_REVIEW
+verdict: null                         # READ_ONLY evaluations only: defect | not_code
+verdict_reason: null                  # one line, why
+verdict_at: null                      # ISO-8601 timestamp of the verdict
 
 work_item_status: existing            # none | existing | created | pending_creation
                                       # | blocked_missing_parent | declined_by_user
@@ -131,6 +134,14 @@ dirty_worktree_at_checkpoint: true
 Fields may be absent or `null` while unknown — nothing has to exist from the first write. Do not
 invent a value to fill a field, and do not rename a field or a state; the vocabulary is stable so a
 future Dev Hub can read it.
+
+### Evaluation (`task_class: READ_ONLY`)
+
+One checkpoint file per work item and repo. `/dev-task <id> --evaluate` writes a `READ_ONLY` checkpoint
+with `verdict`, `verdict_reason` and `verdict_at`; only that evaluation session writes a `READ_ONLY`
+checkpoint. Re-evaluating rewrites `verdict*`. Starting the development reclassifies the same file
+(`status: active`, new `task_class`) and keeps `verdict*`; evaluating a work item that already has a
+development checkpoint opens that one.
 
 ### phase values
 

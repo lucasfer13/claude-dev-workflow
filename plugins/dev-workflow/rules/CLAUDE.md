@@ -63,7 +63,8 @@ existing files is a decision for the user, never a side effect, and goes in its 
 — from the request plus a quick inspection. **In doubt → STANDARD.**
 
 - **READ_ONLY** — explain code, search, investigate, read a work item/logs/docs, analyse an error,
-  read-only review. Any helpful agent; no approval gate, no branch. Switch workflow if code must change.
+  read-only review. Any helpful agent; no approval gate, no branch. Switch workflow if code must change. Only an evaluation session, started with
+  `/dev-task <id> --evaluate`, writes a `READ_ONLY` checkpoint (verdict fields: `checkpoint-schema.md` §3).
 - **TRIVIAL** — only when ALL hold: small, obvious, localised; no functional ambiguity, architecture
   decision, DB change, migration, breaking change, auth/security, concurrency, external contract,
   cross-stack change or real research; low regression risk. Typos, internal renames, obvious

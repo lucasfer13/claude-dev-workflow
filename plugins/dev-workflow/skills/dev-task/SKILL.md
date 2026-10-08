@@ -50,6 +50,15 @@ just say "continúa con la PROJ-123"). The approval gates are unchanged.
 2. **Classify**: `READ_ONLY | TRIVIAL | STANDARD | COMPLEX | BUG | DOCUMENTATION_ONLY |
    RELEASE_PREPARATION | CODE_REVIEW`. Quick inspection if needed. In doubt → STANDARD.
 
+   **`--evaluate`** (`/dev-task <id> --evaluate`): an evaluation, not a development. Classify `READ_ONLY`
+   and write the checkpoint with `verdict` (`defect` | `not_code`), `verdict_reason` and `verdict_at`
+   instead of a development checkpoint. One checkpoint file per work item and repo: an existing
+   development checkpoint is opened, never duplicated; re-evaluating rewrites `verdict*`.
+
+   **Starting after an evaluation**: `/dev-task <id>` without the flag, when a `completed` `READ_ONLY`
+   checkpoint exists for that work item, reclassifies that same file (`status: active`, new `task_class`,
+   `verdict*` kept) instead of creating another.
+
 3. **Route.**
    - READ_ONLY → answer it with whichever agents help. No branch, no implementation gate.
    - TRIVIAL → quick inspection → **micro plan** → STOP for approval → one implementer
