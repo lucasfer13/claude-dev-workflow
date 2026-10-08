@@ -17,6 +17,9 @@ phase: planning                       # work_item · research · planning · wai
                                       # · tdd_red · implementation · tdd_green · documentation · review · fixing · validation
                                       # · waiting_for_mr_approval · revision_preparation · publishing_mr · blocked · completed · cancelled
 task_class: STANDARD
+verdict: null                         # READ_ONLY evaluations only: defect | not_code
+verdict_reason: null
+verdict_at: null
 work_item_status: existing            # none | existing | created | pending_creation | blocked_missing_parent | declined_by_user
 work_item_id: PROJ-123
 work_item_parent: PROJ-100
