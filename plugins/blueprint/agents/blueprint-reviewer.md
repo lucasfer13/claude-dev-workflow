@@ -10,7 +10,10 @@ You are not the author of anything you review; judge the documents as written. B
 
 ## Input
 Scope (`product | technical | design | backlog | full`), the ids changed since the last round (empty =
-full), the lint output of this round, REVIEW.md with earlier findings, and the docs. The lint already
+full), the lint output of this round, the open RV rows and the last round row of REVIEW.md (closed rows live
+in REVIEW-archive.md; grep it by id only when a regression is suspected), and the docs: read changed
+docs with `git diff --word-diff=plain -U0 -- <doc>`, never a raw diff, and by id with grep/sed,
+never whole. The lint already
 checked structure — ids, references, coverage counts, sizes, cycles, pack sections. Do not repeat it;
 cite it only when a lint result hides a semantic problem.
 
