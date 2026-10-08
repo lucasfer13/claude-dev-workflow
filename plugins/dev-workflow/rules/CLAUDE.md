@@ -456,6 +456,9 @@ strings or unnecessary PII. `Next Action` = one concrete executable step. TRIVIA
 has a branch, a work item or ends in a review request. Never auto-delete; after the review request is
 created, `status: completed`.
 
+**Before asking the user anything** (`AskUserQuestion` or a gate prompt), write `status: waiting_user`
+to the active checkpoint; after the answer, write `status: active` again.
+
 **To write one**: `~/.claude/dev-workflow/reference/checkpoint-template.md`. Full schema, triggers
 and trace format only when in doubt: `checkpoint-schema.md` in the same folder.
 
