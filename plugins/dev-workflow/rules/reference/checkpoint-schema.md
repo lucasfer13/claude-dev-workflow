@@ -33,15 +33,17 @@ Derivation, in order:
    **Always sanitise**: the credential part of a remote URL must never reach the key, the path or
    the file content.
 
-2. **No remote** — the repository root's directory name, plus a short stable discriminator derived
-   from its absolute path, to avoid collisions between two same-named checkouts:
+2. **No remote** — deterministic, so every tool derives the same key:
+
+   1. If dev-state already has a folder whose checkpoints carry the same normalised `repo_root`,
+      keep using that folder's name as is; never rename it.
+   2. Otherwise `<name>__local-<hash>`: `<name>` is the root folder's name in lower case with every
+      run of `[^a-z0-9._-]` replaced by `-` (as in rule 1); `<hash>` is the first 6 hex of the
+      **sha1** of the absolute path, normalised to lower case, `\` separators, no trailing separator.
 
    ```
-   ~/src/orders-api  →  orders-api__local-4f1c9a
+   ~/src/Orders API  →  orders-api__local-<sha1 6 hex>
    ```
-
-   Any stable short hash of the normalised absolute path works; keep using the same one for that
-   path once chosen.
 
 3. **Not a git repository at all** — same as (2), based on the working directory.
 
