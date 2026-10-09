@@ -107,11 +107,16 @@ try:
     cfg.write_text(json.dumps({"review_request": {"title_format": "{subject}", "max_section_words": 20, "banned_phrases": []}}))
     t("configured word limit", "deny", B, {"command": f"gh pr create --title 'Fix' --body '## Summary\n{words(21)}\n## QA\nq\n## Tests\nt'"})
     t("banned phrases disabled", "pass", B, {"command": "gh pr create --title 'Fix' --body '## Summary\nThis PR introduces totals.\n## QA\nq\n## Tests\nt'"})
+    cfg.write_text(json.dumps({"review_request": {"title_format": "{subject}", "banned_phrases": ["TL;DR:"]}}))
+    t("phrase ending in punctuation", "deny", B, {"command": "gh pr create --title 'Fix' --body '## Summary\nTL;DR: totals\n## QA\nq\n## Tests\nt'"})
+    cfg.write_text(json.dumps({"review_request": {"title_format": "{subject}", "max_section_words": 20, "banned_phrases": []}}))
     t("preamble counts as a section", "deny", B, {"command": f"gh pr create --title 'Fix' --body '{words(21)}\n## Summary\ns\n## QA\nq\n## Tests\nt'"})
 
     cfg.write_text(json.dumps({"review_request": {"title_format": "{subject}", "max_section_words": None, "banned_phrases": None}}))
     t("null filler config keeps the guard on", "deny", B, {"command": "git push --force origin main"})
     t("phrase mid-sentence passes", "pass", B, {"command": "gh pr create --title 'Fix' --body '## Summary\ns\n## QA\nNot covered in this PR: rounding.\n## Tests\nt'"})
+    t("fenced heading and opener pass", "pass", B, {"command": "gh pr create --title 'Fix' --body '## Summary\n```\n## x\nThis PR introduces\n```\n## QA\nq\n## Tests\nt'"})
+    t("inline triple backticks keep headings", "pass", B, {"command": "gh pr create --title 'Fix' --body '## Summary\n```x``` inline\n## QA\nq\n## Tests\nt'"})
     t("wrapped opener denied", "deny", B, {"command": "gh pr create --title 'Fix' --body '## Summary\n- This PR\n  introduces totals.\n## QA\nq\n## Tests\nt'"})
 finally:
     shutil.rmtree(state, ignore_errors=True)

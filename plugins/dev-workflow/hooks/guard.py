@@ -38,7 +38,7 @@ def load_config():
         "rr_server": rr.get("mcp_server"),
         "title_format": rr.get("title_format") or "{id} - {subject}",
         "sections": [s.lower() for s in (rr.get("sections") or ["Summary", "QA", "Tests"])],
-        "max_words": max_words if isinstance(max_words, int) and max_words > 0 else 200,
+        "max_words": max_words if type(max_words) is int and max_words > 0 else 200,
         "banned": [p for p in (banned if isinstance(banned, list) else DEFAULT_BANNED) if isinstance(p, str) and p.strip()],
         "forbidden": [m.lower() for m in (cfg.get("forbidden_models") or [])],
         "attribution": cfg.get("block_attribution", True),
@@ -92,7 +92,7 @@ def body_sections(body):
     """(heading, text, prose) per section; '' heads the preamble and prose leaves out fenced code."""
     out, head, lines, prose, fence = [], "", [], [], False
     for line in body.splitlines():
-        if line.lstrip().startswith("```"):
+        if re.match(r"\s*```(?!.*```)", line):
             fence = not fence
             lines.append(line)
             continue
@@ -122,12 +122,12 @@ def check_review_request(title, body, creating):
     if CFG["attribution"] and (ATTRIBUTION.search(body) or "\U0001F916" in body):
         decide("deny", "The body carries an attribution signature. Remove it (§8).")
     for head, text, prose in sections:
-        n = len(re.findall(r"\w+", text))
+        n = len(re.findall(r"\S*\w\S*", text))
         if n > CFG["max_words"]:
             decide("deny", f"Section '{head or '(before the first heading)'}' has {n} words, over max_section_words "
                            f"{CFG['max_words']} (§16): keep what the diff cannot tell.")
         for phrase in CFG["banned"]:
-            opener = r"^[ \t]*(?:[-*>][ \t]*)*" + r"\s+".join(map(re.escape, phrase.split())) + r"\b"
+            opener = r"^[ \t]*(?:[-*>][ \t]*)*" + r"\s+".join(map(re.escape, phrase.split())) + r"(?!\w)"
             if re.search(opener, prose, re.M | re.I):
                 decide("deny", f"Section '{head or '(before the first heading)'}' opens a line with the filler "
                                f"'{phrase}' (§16, review_request.banned_phrases).")
