@@ -19,6 +19,7 @@ CODE_EXT = {".cs", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".kt", ".kts", ".java",
 HASH_COMMENT_EXT = {".py"}
 GENERATED = re.compile(r"\.Designer\.cs$|\.g\.cs$|\.g\.i\.cs$|ModelSnapshot\.cs$|\.min\.js$|/Migrations/|/obj/|/bin/|/dist/")
 ATTRIBUTION = re.compile(r"co-authored-by|generated with \[?claude code", re.I)
+DEFAULT_BANNED = ["This PR introduces", "In this PR", "This pull request"]
 
 
 def load_config():
@@ -29,6 +30,7 @@ def load_config():
         cfg = {}
     wi = cfg.get("work_item") or {}
     rr = cfg.get("review_request") or {}
+    max_words, banned = rr.get("max_section_words"), rr.get("banned_phrases")
     return {
         "prefix": wi.get("prefix"),
         "tracker": wi.get("mcp_server"),
@@ -36,8 +38,8 @@ def load_config():
         "rr_server": rr.get("mcp_server"),
         "title_format": rr.get("title_format") or "{id} - {subject}",
         "sections": [s.lower() for s in (rr.get("sections") or ["Summary", "QA", "Tests"])],
-        "max_words": rr.get("max_section_words") or 200,
-        "banned": [p.lower() for p in rr.get("banned_phrases", ["This PR introduces", "In this PR", "This pull request"])],
+        "max_words": max_words if isinstance(max_words, int) and max_words > 0 else 200,
+        "banned": [p for p in (banned if isinstance(banned, list) else DEFAULT_BANNED) if isinstance(p, str) and p.strip()],
         "forbidden": [m.lower() for m in (cfg.get("forbidden_models") or [])],
         "attribution": cfg.get("block_attribution", True),
     }
@@ -86,6 +88,26 @@ def title_regex():
     return re.compile("^" + rx + "$")
 
 
+def body_sections(body):
+    """(heading, text, prose) per section; '' heads the preamble and prose leaves out fenced code."""
+    out, head, lines, prose, fence = [], "", [], [], False
+    for line in body.splitlines():
+        if line.lstrip().startswith("```"):
+            fence = not fence
+            lines.append(line)
+            continue
+        m = None if fence else re.match(r"^##\s+(.+)$", line)
+        if m:
+            out.append((head, lines, prose))
+            head, lines, prose = m[1].strip(), [], []
+        else:
+            lines.append(line)
+            if not fence:
+                prose.append(line)
+    out.append((head, lines, prose))
+    return [(h, "\n".join(t), "\n".join(p)) for h, t, p in out]
+
+
 def check_review_request(title, body, creating):
     if title is not None and not title_regex().match(title.strip()):
         decide("deny", f"Review-request title must follow '{CFG['title_format']}' (§16).")
@@ -93,19 +115,22 @@ def check_review_request(title, body, creating):
         if creating:
             decide("deny", "Review request without a body (§16): " + " / ".join(CFG["sections"]) + ".")
         return
-    heads = [h.strip().lower() for h in re.findall(r"^##\s+(.+)$", body, re.M)]
+    sections = body_sections(body)
+    heads = [h.lower() for h, _, _ in sections[1:]]
     if heads[:len(CFG["sections"])] != CFG["sections"]:
         decide("deny", f"Review-request body (§16) needs sections {CFG['sections']} in that order; found {heads}.")
     if CFG["attribution"] and (ATTRIBUTION.search(body) or "\U0001F916" in body):
         decide("deny", "The body carries an attribution signature. Remove it (§8).")
-    for part in re.split(r"^##\s+", body, flags=re.M)[1:]:
-        head, _, text = part.partition("\n")
-        if len(text.split()) > CFG["max_words"]:
-            decide("deny", f"Section '{head.strip()}' has {len(text.split())} words, over max_section_words "
+    for head, text, prose in sections:
+        n = len(re.findall(r"\w+", text))
+        if n > CFG["max_words"]:
+            decide("deny", f"Section '{head or '(before the first heading)'}' has {n} words, over max_section_words "
                            f"{CFG['max_words']} (§16): keep what the diff cannot tell.")
-    hit = next((p for p in CFG["banned"] if p in body.lower()), None)
-    if hit:
-        decide("deny", f"Review-request body uses the filler phrase '{hit}' (§16, review_request.banned_phrases).")
+        for phrase in CFG["banned"]:
+            opener = r"^[ \t]*(?:[-*>][ \t]*)*" + r"\s+".join(map(re.escape, phrase.split())) + r"\b"
+            if re.search(opener, prose, re.M | re.I):
+                decide("deny", f"Section '{head or '(before the first heading)'}' opens a line with the filler "
+                               f"'{phrase}' (§16, review_request.banned_phrases).")
 
 
 def read_file(path):

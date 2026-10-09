@@ -101,7 +101,8 @@ Summary: docs touched (file → what) · both grep results · version before →
 Review: `git diff <dev> -- CHANGELOG.md`.
 
 ## 10 · DOCUMENTED → REVIEWED · auto
-- Reviewer ran on a code diff, on a model other than the one that wrote it, or skipped as docs-only with reason
+- Reviewer ran on a code diff, on a model that did not write most of it (model cited), or skipped
+  as docs-only with reason
 - Diff touches PII, auth, credentials or an external integration → security reviewer ran too
 - 0 CRITICAL / IMPORTANT open
 - Each finding has a destination: fixed (sha), deferred (ticket) or rejected (reason)

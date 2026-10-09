@@ -126,7 +126,7 @@ genuinely cannot come first (a pure rename, generated code, config with no harne
 
 **Few tests, short comments** (global `CLAUDE.md` §9 and §2): core behaviour, real edge cases, one
 regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests, no
-assert on a mock of the unit under test when its outcome is what matters.
+test whose only assertion is on a stub or mock the test itself set up.
 Comments: the non-obvious why in one line; doc summaries one sentence. Do not copy the comment
 density of the file you are editing.
 

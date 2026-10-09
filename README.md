@@ -20,7 +20,7 @@ request → classify → architect asks (options, no decisions) → you decide �
   an append-only trace rendered to a private page at the gates.
 - **Guard hook** (PreToolUse) enforcing what text rules keep missing: no force-push / `reset --hard` /
   rebase of pushed history, no attribution trailers, no work-item ids or comment bloat (> ¼) in commits,
-  review-request title and sections, ASCII-only tracker writes, forbidden models, no repo edits before
+  review-request title and sections, filler openers and over-long sections, ASCII-only tracker writes, forbidden models, no repo edits before
   the plan is approved.
 
 ## Install
@@ -59,7 +59,7 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 | `work_item.mcp_server` / `ascii_only` | MCP server of your issue tracker, and whether its writes must be ASCII. |
 | `review_request.tool` | `gh` (GitHub PR), `glab` (GitLab MR) or `mcp` with `mcp_server`. |
 | `review_request.title_format` / `sections` | Enforced by the guard on create/edit. |
-| `review_request.max_section_words` / `banned_phrases` | Filler guard on the body: words per section (default 200) and opener phrases to deny; `[]` disables the phrases. |
+| `review_request.max_section_words` / `banned_phrases` | Filler guard on every review-request body, release PRs included: words per section (positive integer; absent or invalid = 200) and phrases denied at the start of a line outside code fences (`[]` disables them). |
 | `versioning` | `semver`, or `revision` (4-part; only REVISION moves into the dev branch). |
 | `forbidden_models` | Models the guard refuses for subagents. |
 

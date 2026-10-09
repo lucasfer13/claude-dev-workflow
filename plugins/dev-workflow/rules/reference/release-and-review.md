@@ -79,8 +79,10 @@ planned but not implemented.
 
 **No filler.** Say what a reviewer cannot read off the diff — why, decisions, risks — never a
 file-by-file retelling of it. No opening boilerplate ("This PR introduces…", "In this PR we…"), no
-closing summary of the summary. Each section stays under config `review_request.max_section_words`
-(default 200) and avoids `review_request.banned_phrases`; the guard denies either.
+closing summary of the summary. Each section, the text before the first heading included, stays under
+config `review_request.max_section_words` (default 200), and no line opens with one of
+`review_request.banned_phrases`; the guard denies either, on release PRs too — a bigger one raises the
+config key or runs with `!`.
 
 **No work item at review-request time**, and `work_item.required` is
 true → stop and ask: create it now, or another convention the project supports. Never invent one.
