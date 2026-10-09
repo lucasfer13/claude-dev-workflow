@@ -43,7 +43,7 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 
 ```json
 {
-  "work_item": { "prefix": "PROJ", "required": false, "mcp_server": null, "ascii_only": false },
+  "work_item": { "prefix": "PROJ", "tool": null, "required": false, "mcp_server": null, "ascii_only": false },
   "review_request": { "tool": "gh", "mcp_server": null, "title_format": "{id} - {subject}",
                       "sections": ["Summary", "QA", "Tests"] },
   "versioning": "semver",
@@ -54,6 +54,7 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 | Key | Meaning |
 |---|---|
 | `work_item.prefix` | Ticket id prefix (`PROJ` → `PROJ-123`); `null` for none. Also what the guard strips from comments. |
+| `work_item.tool` | `gh` for GitHub Issues (use prefix `#`; PRs get `Closes #12`), `mcp` for an MCP tracker, `null` for none. |
 | `work_item.required` | Ask for a work item before starting a development. |
 | `work_item.mcp_server` / `ascii_only` | MCP server of your issue tracker, and whether its writes must be ASCII. |
 | `review_request.tool` | `gh` (GitHub PR), `glab` (GitLab MR) or `mcp` with `mcp_server`. |

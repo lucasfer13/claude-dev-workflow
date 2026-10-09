@@ -1,6 +1,7 @@
 {
   "work_item": {
     "prefix": "PROJ",
+    "tool": null,
     "required": false,
     "mcp_server": null,
     "ascii_only": false

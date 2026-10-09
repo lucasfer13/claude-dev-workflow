@@ -88,6 +88,17 @@ try:
     t("edit outside repo", "pass", "Write", {"file_path": str(tmp / "note.md"), "content": "x"})
     cp.write_text(fm.replace("plan_approved: false", "plan_approved: true"))
     t("edit after approval", "pass", "Write", {"file_path": str(repo / "A.cs"), "content": "x"})
+    cp.unlink()
+
+    cfg.write_text(json.dumps({"work_item": {"prefix": "#", "tool": "gh"}, "review_request": {"tool": "gh"}}))
+    (repo / "b.py").write_text("# 3 retries, then give up\nx = 1\ny = 2\nz = 3\nw = 4\n"); sh("add", "b.py")
+    t("gh: hash comment with number", "pass", B, {"command": "git commit -m fix"})
+    (repo / "b.py").write_text("# workaround for #12\nx = 1\ny = 2\nz = 3\nw = 4\n"); sh("add", "b.py")
+    t("gh: issue ref in comment", "deny", B, {"command": "git commit -m fix"})
+    (repo / "b.py").write_text("x = 1\ny = 2\nz = 3\nw = 4\n"); sh("add", "b.py")
+    t("gh: Fixes #12 in commit message", "pass", B, {"command": "git commit -m 'Fix totals\n\nFixes #12'"})
+    t("gh: pr title ok", "pass", B, {"command": "gh pr create --title '#12 - Fix totals' --body '## Summary\nCloses #12\n## QA\nq\n## Tests\nt'"})
+    t("gh: pr title spaced id", "deny", B, {"command": "gh pr create --title '# 12 - Fix totals' --body '## Summary\ns\n## QA\nq\n## Tests\nt'"})
 finally:
     shutil.rmtree(state, ignore_errors=True)
     shutil.rmtree(tmp, ignore_errors=True)
