@@ -51,6 +51,10 @@ that screen already uses. Never migrate XML to Compose because you prefer Compos
 
 Read the neighbouring code and match module layout, layering, DI style, naming and test style.
 
+Implement the **minimum adequate** solution: no speculative abstraction, no parameter or option no
+caller uses, no wrapper the plan did not call for, no helper that already exists (grep first), no
+`try/catch` or null check for a case that cannot happen here. No refactor unrelated to the change.
+
 Craft requirements:
 
 - **Lifecycle correctness**: no work leaked past the owner's lifecycle, collection with
@@ -121,7 +125,8 @@ genuinely cannot come first (a pure rename, generated code, config with no harne
 `TDD_EXCEPTION` and one line of why.
 
 **Few tests, short comments** (global `CLAUDE.md` §9 and §2): core behaviour, real edge cases, one
-regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests.
+regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests, no
+assert on a mock of the unit under test when its outcome is what matters.
 Comments: the non-obvious why in one line; doc summaries one sentence. Do not copy the comment
 density of the file you are editing.
 

@@ -19,7 +19,7 @@ else in `CLAUDE.md` is touched, and a timestamped backup is written first.
    - `work_item.required` — must every development have a work item?
    - `work_item.tool` — `gh` for GitHub Issues (then `prefix` is `#`), `mcp` for an MCP tracker, or `null`.
    - `work_item.mcp_server` — MCP server of the issue tracker, or `null`; `ascii_only` if it rejects non-ASCII.
-   - `review_request.tool` — `gh`, `glab` or `mcp` (+ `mcp_server`); `title_format`, `sections`.
+   - `review_request.tool` — `gh`, `glab` or `mcp` (+ `mcp_server`); `title_format`, `sections`, `max_section_words`, `banned_phrases`.
    - `versioning` — `semver` or `revision` (4-part, REVISION moves into the dev branch).
    - `forbidden_models` — models the guard refuses for subagents.
 5. Tell the user the rules load in the **next** session.

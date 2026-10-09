@@ -75,7 +75,14 @@ Into `DEVELOPMENT_BRANCH` (never hardcoded). Title from config `review_request.t
 
 Describe what shipped, in this order of authority: **the actual diff**, then the work item, the
 approved plan, TDD evidence, tests, documentation changes, reviewer findings. Never something
-planned but not implemented. **No work item at review-request time**, and `work_item.required` is
+planned but not implemented.
+
+**No filler.** Say what a reviewer cannot read off the diff — why, decisions, risks — never a
+file-by-file retelling of it. No opening boilerplate ("This PR introduces…", "In this PR we…"), no
+closing summary of the summary. Each section stays under config `review_request.max_section_words`
+(default 200) and avoids `review_request.banned_phrases`; the guard denies either.
+
+**No work item at review-request time**, and `work_item.required` is
 true → stop and ask: create it now, or another convention the project supports. Never invent one.
 
 ## 18. Integrations

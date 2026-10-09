@@ -59,6 +59,7 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 | `work_item.mcp_server` / `ascii_only` | MCP server of your issue tracker, and whether its writes must be ASCII. |
 | `review_request.tool` | `gh` (GitHub PR), `glab` (GitLab MR) or `mcp` with `mcp_server`. |
 | `review_request.title_format` / `sections` | Enforced by the guard on create/edit. |
+| `review_request.max_section_words` / `banned_phrases` | Filler guard on the body: words per section (default 200) and opener phrases to deny; `[]` disables the phrases. |
 | `versioning` | `semver`, or `revision` (4-part; only REVISION moves into the dev branch). |
 | `forbidden_models` | Models the guard refuses for subagents. |
 

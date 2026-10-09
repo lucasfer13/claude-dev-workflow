@@ -10,7 +10,9 @@
     "tool": "gh",
     "mcp_server": null,
     "title_format": "{id} - {subject}",
-    "sections": ["Summary", "QA", "Tests"]
+    "sections": ["Summary", "QA", "Tests"],
+    "max_section_words": 200,
+    "banned_phrases": ["This PR introduces", "In this PR", "This pull request"]
   },
   "versioning": "semver",
   "forbidden_models": []

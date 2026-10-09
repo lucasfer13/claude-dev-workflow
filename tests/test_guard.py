@@ -73,6 +73,10 @@ t("tracker read accents", "pass", "mcp__tracker__search", {"query": "café"})
 t("mcp review bad order", "deny", "mcp__reviews__create", {"title": "PROJ-1 - x", "description": "## Summary\n## Tests\n## QA\n"})
 t("mcp review signature", "deny", "mcp__reviews__create", {"title": "PROJ-1 - x", "description": "## Summary\n## QA\n## Tests\nGenerated with Claude Code"})
 t("mcp review ok", "pass", "mcp__reviews__create", {"title": "PROJ-1 - x", "description": "## Summary\ns\n## QA\nq\n## Tests\nt"})
+words = lambda n: " ".join(["word"] * n)
+t("pr section over word limit", "deny", B, {"command": f"gh pr create --title 'PROJ-7 - Fix' --body '## Summary\n{words(201)}\n## QA\nq\n## Tests\nt'"})
+t("pr sections at word limit", "pass", B, {"command": f"gh pr create --title 'PROJ-7 - Fix' --body '## Summary\n{words(200)}\n## QA\n{words(200)}\n## Tests\nt'"})
+t("pr banned opener", "deny", B, {"command": "gh pr create --title 'PROJ-7 - Fix' --body '## Summary\nThis PR introduces totals.\n## QA\nq\n## Tests\nt'"})
 t("forbidden model", "deny", "Agent", {"prompt": "x", "description": "x", "model": "expensive-model"})
 t("allowed model", "pass", "Agent", {"prompt": "x", "description": "x", "model": "sonnet"})
 
@@ -99,6 +103,10 @@ try:
     t("gh: Fixes #12 in commit message", "pass", B, {"command": "git commit -m 'Fix totals\n\nFixes #12'"})
     t("gh: pr title ok", "pass", B, {"command": "gh pr create --title '#12 - Fix totals' --body '## Summary\nCloses #12\n## QA\nq\n## Tests\nt'"})
     t("gh: pr title spaced id", "deny", B, {"command": "gh pr create --title '# 12 - Fix totals' --body '## Summary\ns\n## QA\nq\n## Tests\nt'"})
+
+    cfg.write_text(json.dumps({"review_request": {"title_format": "{subject}", "max_section_words": 20, "banned_phrases": []}}))
+    t("configured word limit", "deny", B, {"command": f"gh pr create --title 'Fix' --body '## Summary\n{words(21)}\n## QA\nq\n## Tests\nt'"})
+    t("banned phrases disabled", "pass", B, {"command": "gh pr create --title 'Fix' --body '## Summary\nThis PR introduces totals.\n## QA\nq\n## Tests\nt'"})
 finally:
     shutil.rmtree(state, ignore_errors=True)
     shutil.rmtree(tmp, ignore_errors=True)

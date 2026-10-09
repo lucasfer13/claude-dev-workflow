@@ -376,9 +376,13 @@ TDD: RED confirmed … / GREEN confirmed …
 Validation: build PASS · tests 342 passed, 0 failed · format clean
 Documentation: OpenAPI updated · temporary comments removed · changelog …
 Review: No CRITICAL or IMPORTANT findings.
+Look here: OrderService.cs:88 (riskiest change) · OrderMapper.cs:12 (not reviewed) …
 Risks / Preconditions: …
 Ready for your validation.
 ```
+
+`Look here` gives 2-4 `file:line` anchors for your own read of the diff — the reviewer shares the
+implementer's blind spots more than you do.
 
 Then **STOP** and ask, in the user's language, e.g. "¿Validas el desarrollo y quieres que
 prepare/publique la MR?" / "Do you validate this development and want me to prepare/publish the
@@ -397,13 +401,16 @@ dangerously.
 only touches comments, docs, CHANGELOG or markdown gets no review agent — the main thread checks the
 ticket-id and stale-doc greps itself.
 
+The reviewer runs on a **different model from the one that wrote the diff**, so their blind spots
+differ: implementers on sonnet, reviewer on opus; if an implementer was raised to opus, review on sonnet.
+
 After `code-reviewer`: no CRITICAL or IMPORTANT findings → done. Otherwise
 `regression test when useful → RED → implementer → GREEN → documentation if affected → reviewer`.
 `MAX_REVIEW_FIX_LOOPS = 2`, then stop and show the user the outstanding findings. If a fix changes
 the plan materially, invalidate the approval and go back to the architect.
 
 A re-review after fixes is scoped to the fix diff (`git diff <reviewed-sha>..HEAD`) plus the open
-findings, may run on sonnet, and is skipped when the previous round had only IMPROVEMENT/NIT.
+findings, stays on the reviewer's model (the narrow scope keeps it cheap), and is skipped when the previous round had only IMPROVEMENT/NIT.
 
 For non-trivial changes run `documentation-release-maintainer` **after GREEN and before the final
 review**, so the reviewer also sees comments, OpenAPI, changelog and version metadata.

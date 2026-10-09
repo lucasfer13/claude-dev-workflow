@@ -36,6 +36,8 @@ def load_config():
         "rr_server": rr.get("mcp_server"),
         "title_format": rr.get("title_format") or "{id} - {subject}",
         "sections": [s.lower() for s in (rr.get("sections") or ["Summary", "QA", "Tests"])],
+        "max_words": rr.get("max_section_words") or 200,
+        "banned": [p.lower() for p in rr.get("banned_phrases", ["This PR introduces", "In this PR", "This pull request"])],
         "forbidden": [m.lower() for m in (cfg.get("forbidden_models") or [])],
         "attribution": cfg.get("block_attribution", True),
     }
@@ -96,6 +98,14 @@ def check_review_request(title, body, creating):
         decide("deny", f"Review-request body (§16) needs sections {CFG['sections']} in that order; found {heads}.")
     if CFG["attribution"] and (ATTRIBUTION.search(body) or "\U0001F916" in body):
         decide("deny", "The body carries an attribution signature. Remove it (§8).")
+    for part in re.split(r"^##\s+", body, flags=re.M)[1:]:
+        head, _, text = part.partition("\n")
+        if len(text.split()) > CFG["max_words"]:
+            decide("deny", f"Section '{head.strip()}' has {len(text.split())} words, over max_section_words "
+                           f"{CFG['max_words']} (§16): keep what the diff cannot tell.")
+    hit = next((p for p in CFG["banned"] if p in body.lower()), None)
+    if hit:
+        decide("deny", f"Review-request body uses the filler phrase '{hit}' (§16, review_request.banned_phrases).")
 
 
 def read_file(path):

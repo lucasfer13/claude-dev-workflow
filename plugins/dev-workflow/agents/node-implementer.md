@@ -56,6 +56,10 @@ Never add a dependency on your own initiative — not a validation library, ORM,
 test helper. Use what the project has; if the plan names a new one, add exactly that, at the version the
 plan or the registry resolves, and say so in the report.
 
+Implement the **minimum adequate** solution: no speculative abstraction, no parameter or option no
+caller uses, no wrapper the plan did not call for, no helper that already exists (grep first), no
+`try/catch` or null check for a case that cannot happen here. No refactor unrelated to the change.
+
 ### TypeScript craft
 
 - `strict` always. No `any`; use `unknown` and narrow. No `as` cast that hides a real mismatch;
@@ -184,7 +188,8 @@ dir (retry `rm` on Windows), and would fail if the behaviour broke. Forge hostil
 security-relevant code (bad frames, malformed URLs, wrong Host/Origin, truncated bodies).
 
 **Few tests, short comments** (global `CLAUDE.md` §9 and §2): core behaviour, real edge cases, one
-regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests.
+regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests, no
+assert on a mock of the unit under test when its outcome is what matters.
 Comments: the non-obvious why in one line; doc summaries one sentence. Do not copy the comment
 density of the file you are editing.
 
