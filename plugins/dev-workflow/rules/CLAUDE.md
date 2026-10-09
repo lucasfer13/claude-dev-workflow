@@ -80,7 +80,7 @@ existing files is a decision for the user, never a side effect, and goes in its 
 
 Work items are **optional** unless config `work_item.required` is true. When the user names one
 ("PROJ-123", "haz la PROJ-123", "do PROJ-123"), read it **first** — one read call by the main
-thread, if `work_item.mcp_server` is configured; `issue-tracker-coordinator` only for searches,
+thread, if a tracker is configured (`work_item.tool: gh` → `gh issue view <n>`, or `work_item.mcp_server`); `issue-tracker-coordinator` only for searches,
 parent inference or creation — and get: subject, description, tracker, project, parent, status,
 priority, relevant comments, acceptance criteria, relations, relevant attachments. Nothing
 irrelevant. Summarise it as:
@@ -238,7 +238,8 @@ the target, never lose local changes. No `reset`, no `clean`, no destructive ope
 
 **Branch naming.** Detect the real convention from existing branches, recent review requests, memory
 and repo history. Either `feat(Scope)/PROJ-123` / `fix(Scope)/PROJ-123` / `chore(Scope)/PROJ-123`, or
-the unscoped `feat/PROJ-123` form. Type: `feat` functionality, `fix` bug, `chore`
+the unscoped `feat/PROJ-123` form. With GitHub Issues (prefix `#`) the branch carries the number
+without `#`: `feat(Scope)/12` or `feat/12`. Type: `feat` functionality, `fix` bug, `chore`
 maintenance/config/debt. Scope inferred from module, integration or bounded context (e.g. an
 `Orders` module → `Orders`). Never invent a scope; if two are equally plausible and the repo
 requires one, ask.
@@ -427,8 +428,8 @@ mutating command. Hard rule.
 
 ## 18. Integrations
 
-**Issue tracker** (optional) — reached through the MCP server named in config `work_item.mcp_server`,
-when set. Read: get issue, search issues, list projects/trackers/statuses/priorities, list members.
+**Issue tracker** (optional) — config `work_item.tool: gh` means GitHub Issues through the `gh` CLI
+(ids `#12`); otherwise the MCP server named in config `work_item.mcp_server`, when set. Read: get issue, search issues, list projects/trackers/statuses/priorities, list members.
 Write (when the integration supports it and writes are enabled): create item, add note, add
 relation, assign, set status/priority. Capability limits (e.g. subtasks only) — §4. If config
 `work_item.ascii_only` is true, tracker writes are plain ASCII (the guard enforces it).

@@ -17,6 +17,7 @@ else in `CLAUDE.md` is touched, and a timestamped backup is written first.
 4. If `~/.claude/dev-workflow.json` was just created, walk the user through it:
    - `work_item.prefix` — ticket id prefix (`PROJ` → `PROJ-123`); `null` for none.
    - `work_item.required` — must every development have a work item?
+   - `work_item.tool` — `gh` for GitHub Issues (then `prefix` is `#`), `mcp` for an MCP tracker, or `null`.
    - `work_item.mcp_server` — MCP server of the issue tracker, or `null`; `ascii_only` if it rejects non-ASCII.
    - `review_request.tool` — `gh`, `glab` or `mcp` (+ `mcp_server`); `title_format`, `sections`.
    - `versioning` — `semver` or `revision` (4-part, REVISION moves into the dev branch).

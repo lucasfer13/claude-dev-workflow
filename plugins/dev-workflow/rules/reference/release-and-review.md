@@ -63,7 +63,8 @@ Into `DEVELOPMENT_BRANCH` (never hardcoded). Title from config `review_request.t
 ## Tests
 ```
 
-- **Summary** — what changes and why, before/after behaviour, important decisions, edge cases, API
+- **Summary** — with GitHub Issues, its first line is `Closes #12` so the merge closes the issue
+  (`Refs #12` when the PR only covers part of it). Then what changes and why, before/after behaviour, important decisions, edge cases, API
   contracts, integration behaviour, out of scope, deployment preconditions, compatibility. Neither
   "Updated provider and tests." nor a novel.
 - **QA** — verifiable scenarios, preferably Given/When/Then: happy path, regression, edge cases,
@@ -79,7 +80,9 @@ true → stop and ask: create it now, or another convention the project supports
 
 ## 18. Integrations
 
-- **Issue tracker** (optional) — the MCP server named in config `work_item.mcp_server`, when set.
+- **Issue tracker** (optional) — GitHub Issues through `gh` when config `work_item.tool` is `gh`
+  (`gh issue view|list|create`; no close/edit/comment without an explicit instruction); otherwise the
+  MCP server named in config `work_item.mcp_server`, when set.
   Read: get issue, search issues, list projects, list trackers, list statuses, list priorities, list
   members. Write (gated by the integration's own write flag): create item, add note, add relation,
   assign, set status, set priority. **No top-level issue creation** if the integration only supports

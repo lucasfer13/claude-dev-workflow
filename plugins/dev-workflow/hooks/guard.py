@@ -41,8 +41,17 @@ def load_config():
     }
 
 
+def ticket_regex(prefix):
+    if not prefix:
+        return None
+    if prefix == "#":
+        # GitHub refs are '#' glued to digits; a spaced hash comment, an HTML entity or word-glued '#' is not one
+        return re.compile(r"(?<![\w&#])#\d+\b")
+    return re.compile(rf"{re.escape(prefix)}[\s_-]?\d+", re.I)
+
+
 CFG = load_config()
-TICKET_ID = re.compile(rf"{re.escape(CFG['prefix'])}[\s_-]?\d+", re.I) if CFG["prefix"] else None
+TICKET_ID = ticket_regex(CFG["prefix"])
 
 
 def decide(decision, reason):
@@ -69,7 +78,7 @@ def winpath(p):
 # ---------- review request format (§16) ----------
 
 def title_regex():
-    idp = rf"{re.escape(CFG['prefix'])}[- ]?\d+" if CFG["prefix"] else r"\S+"
+    idp = r"#\d+" if CFG["prefix"] == "#" else rf"{re.escape(CFG['prefix'])}[- ]?\d+" if CFG["prefix"] else r"\S+"
     parts = re.split(r"(\{id\}|\{subject\})", CFG["title_format"])
     rx = "".join(idp if p == "{id}" else r"\S.*" if p == "{subject}" else re.escape(p) for p in parts)
     return re.compile("^" + rx + "$")
@@ -248,7 +257,7 @@ def check_diff(repo, include_worktree):
             in_block = False
         if is_comment:
             comments += 1
-            if TICKET_ID and TICKET_ID.search(t):
+            if TICKET_ID and TICKET_ID.search(re.sub(r"^(//+|/\*+|\*+|#+)", "", t)):
                 ids.append(f"{path}: {t[:80]}")
         else:
             code += 1
