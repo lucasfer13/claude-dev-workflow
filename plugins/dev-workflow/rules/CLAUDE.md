@@ -376,9 +376,13 @@ TDD: RED confirmed … / GREEN confirmed …
 Validation: build PASS · tests 342 passed, 0 failed · format clean
 Documentation: OpenAPI updated · temporary comments removed · changelog …
 Review: No CRITICAL or IMPORTANT findings.
+Look here: OrderService.cs:88 (riskiest change) · OrderMapper.cs:12 (not reviewed) …
 Risks / Preconditions: …
 Ready for your validation.
 ```
+
+`Look here` gives the user 2-4 `file:line` anchors to read first-hand, not only the reviewer's
+verdict.
 
 Then **STOP** and ask, in the user's language, e.g. "¿Validas el desarrollo y quieres que
 prepare/publique la MR?" / "Do you validate this development and want me to prepare/publish the
@@ -397,13 +401,18 @@ dangerously.
 only touches comments, docs, CHANGELOG or markdown gets no review agent — the main thread checks the
 ticket-id and stale-doc greps itself.
 
+The reviewer runs on a **model that did not write most of the diff**, so their blind spots differ —
+main-thread edits count as the main thread's model: implementers on sonnet → reviewer on opus; an
+opus implementer or a mostly main-thread diff on opus → reviewer on sonnet. Cite the model in phase 10.
+
 After `code-reviewer`: no CRITICAL or IMPORTANT findings → done. Otherwise
 `regression test when useful → RED → implementer → GREEN → documentation if affected → reviewer`.
 `MAX_REVIEW_FIX_LOOPS = 2`, then stop and show the user the outstanding findings. If a fix changes
 the plan materially, invalidate the approval and go back to the architect.
 
 A re-review after fixes is scoped to the fix diff (`git diff <reviewed-sha>..HEAD`) plus the open
-findings, may run on sonnet, and is skipped when the previous round had only IMPROVEMENT/NIT.
+findings, stays on the reviewer's model (the narrow scope keeps it cheap), and is skipped when the
+previous round had only IMPROVEMENT/NIT.
 
 For non-trivial changes run `documentation-release-maintainer` **after GREEN and before the final
 review**, so the reviewer also sees comments, OpenAPI, changelog and version metadata.
@@ -515,8 +524,8 @@ Next: code-reviewer on develop...HEAD
 - **Harness.** The plugin's PreToolUse hook denies what text rules keep missing: force-push,
   `reset --hard`, `clean -f`, rebase/amend of pushed commits, attribution trailers, ticket ids in
   comments, comment density > ¼, non-ASCII tracker writes (when `work_item.ascii_only`), malformed
-  review-request title/body, any model listed in config `forbidden_models`; it asks before editing a
-  repo whose fresh checkpoint has `plan_approved: false`. A deny is a ✘: fix the cause, never work
+  review-request title/body, filler openers and over-long sections in it, any model listed in config
+  `forbidden_models`; it asks before editing a repo whose fresh checkpoint has `plan_approved: false`. A deny is a ✘: fix the cause, never work
   around it. A real exception → tell the user; they run it with `!`.
 
 **Criteria per phase** — the 14 phases, the cross-cutting ones and what each block summarises:

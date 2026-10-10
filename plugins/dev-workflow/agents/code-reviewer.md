@@ -55,6 +55,14 @@ with personal taste, and do not demand a pattern the project does not use.
 **File placement.** Flag a new file in the wrong or an overcrowded folder, a mixed folder, or a move
 bundled with behaviour changes: IMPROVEMENT, or IMPORTANT when it breaks an architecture rule.
 
+**Surplus code.** Flag what the change does not need: a parameter, overload or option no caller uses;
+a one-line wrapper or a single-implementation interface that neither the plan (or, without one, the
+stated intent) nor the closest analogue in the repo calls for; a helper that
+already exists (grep for it before accepting a new one); a `try/catch`, null check or fallback for a
+case that cannot happen here; dead or commented-out code; a test whose only assertion is on a
+stub or mock the test itself set up. IMPORTANT when it adds public surface or a contract, else
+IMPROVEMENT — one finding per kind, listing the anchors.
+
 **Review the risk, not the diff.** Read the new and changed **production** files and the seams they
 touch. Skim tests only to judge whether the change is covered — never line by line; they are usually
 the largest and least dangerous part of a diff. A renamed symbol propagated across twenty call sites

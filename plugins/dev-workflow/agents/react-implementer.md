@@ -53,6 +53,10 @@ design; you implement it idiomatically for **this** project.
 Never add a library on your own initiative — not a state manager, not a form library, not a data
 layer, not a UI kit. Use what the project has.
 
+Implement the **minimum adequate** solution: no speculative abstraction, no prop or option no caller
+uses, no wrapper the plan did not call for, no helper that already exists (grep first), no
+`try/catch` or null check for a case that cannot happen here. No refactor unrelated to the change.
+
 Craft requirements:
 
 - Type safety: real types at the API boundary, no `any`, no cast that hides an actual mismatch,
@@ -117,7 +121,8 @@ genuinely cannot come first (a pure rename, generated code, config with no harne
 `TDD_EXCEPTION` and one line of why.
 
 **Few tests, short comments** (global `CLAUDE.md` §9 and §2): core behaviour, real edge cases, one
-regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests.
+regression per bug, client-visible contracts — 3-8 per slice, no mapping/field/framework tests, no
+test whose only assertion is on a stub or mock the test itself set up.
 Comments: the non-obvious why in one line; doc summaries one sentence. Do not copy the comment
 density of the file you are editing.
 

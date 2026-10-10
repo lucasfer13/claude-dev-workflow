@@ -72,13 +72,14 @@ Review: `git show <test-sha>`.
 - Suite 0 failed; total = baseline + added − removed, every removal explained
 - 1 run, or 3 identical when static/shared state is touched
 - No existing assertion changes value without user authorisation
-- Files touched ⊆ plan files, or a reason per extra file
+- Files touched ⊆ plan files, checked by the main thread on `git diff --name-only <dev>...HEAD`
+  against the plan's file list; an extra file without a reason is ✘
 - Format clean (`dotnet format --verify-no-changes` or the stack's formatter)
 - Secrets/PII grep on the diff clean (connection strings, tokens, plates, DNI/NIE, emails in logs)
 - Writes to a live external environment (via MCP) listed in the trace: entity, action, how to revert
 - Commits pushed; local == remote
 
-Summary: files per layer · commits with sha and subject · totals vs baseline · agent's minor decisions · off-plan files.
+Summary: files per layer with lines added · commits with sha and subject · totals vs baseline · agent's minor decisions · off-plan files.
 Review: `git diff --stat <dev>...HEAD` · `git log --oneline <dev>..HEAD`.
 
 ## 8 · GREEN → REFACTORED · optional
@@ -100,7 +101,8 @@ Summary: docs touched (file → what) · both grep results · version before →
 Review: `git diff <dev> -- CHANGELOG.md`.
 
 ## 10 · DOCUMENTED → REVIEWED · auto
-- Reviewer ran on a code diff, or skipped as docs-only with reason
+- Reviewer ran on a code diff, on a model that did not write most of it (model cited), or skipped
+  as docs-only with reason
 - Diff touches PII, auth, credentials or an external integration → security reviewer ran too
 - 0 CRITICAL / IMPORTANT open
 - Each finding has a destination: fixed (sha), deferred (ticket) or rejected (reason)
@@ -113,7 +115,9 @@ Review: rejected and deferred findings · `git show <fix-sha>`.
 
 ## 11 · REVIEWED → READY · gate #2 · human gate
 - Final build, tests and format with real numbers
-- Diff = plan: nothing planned missing, nothing unplanned
+- Diff = plan: nothing planned missing, nothing unplanned (`git diff --name-only` against the plan)
+- 2-4 "look here" anchors (`file:line`) for the user's own read of the diff: what the reviewer
+  did not cover, the riskiest change, any surplus-code finding left as IMPROVEMENT
 - Anything unverified marked as such (e.g. a live write against an external environment)
 - Live-environment changes and deployment preconditions listed
 - A shared library/package changed → consumers listed and a local pack verified
