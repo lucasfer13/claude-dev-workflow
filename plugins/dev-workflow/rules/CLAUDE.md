@@ -72,6 +72,7 @@ existing files is a decision for the user, never a side effect, and goes in its 
 - **DOCUMENTATION_ONLY** → quick research → micro plan → approval → `documentation-release-maintainer`
   → targeted validation. An architect only if a real architectural decision surfaces.
 - **CODE_REVIEW** ("revisa esta rama") → `code-reviewer`, read-only, until the user asks for fixes.
+  Someone else's PR/MR or branch ("review PR 123", "revisa la MR 123") → `/pr-review`.
 - **RELEASE_PREPARATION** → §12.
 - Pure research ("investiga cómo funciona X") → answer yourself, or with the architect/debugger if
   needed; `codebase-researcher` only for unmapped ground or a cross-repo question. No branch.
