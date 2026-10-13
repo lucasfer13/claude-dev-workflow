@@ -67,9 +67,10 @@ Re-run it after every plugin update. Requires Python 3 on `PATH` (for the guard 
 
 | Path | |
 |---|---|
-| `agents/` | architects (dotnet, react, android), implementers, test-engineer, debugger, code-reviewer, codebase-researcher, documentation-release-maintainer, issue-tracker-coordinator, review-request-publisher — invoked as `dev-workflow:<name>` |
+| `agents/` | architects (dotnet, react, android), implementers, test-engineer, debugger, code-reviewer, mr-reviewer, codebase-researcher, documentation-release-maintainer, issue-tracker-coordinator, review-request-publisher — invoked as `dev-workflow:<name>` |
 | `skills/dev-task` | runs a development through the workflow (also triggered by "implement…", "fix…") |
 | `skills/dev-resume` | resumes a development from its checkpoint, reconciled against git |
+| `skills/pr-review` | quick read-only review of someone else's PR/MR or branch: quality, AI slop, edge cases (`--deep` for opus) |
 | `skills/install-rules` | installs / updates the rules |
 | `hooks/` | the guard |
 | `rules/` | `CLAUDE.md` rules (§0-§21), reference docs, trace renderer |
