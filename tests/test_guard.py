@@ -92,6 +92,18 @@ try:
     t("edit outside repo", "pass", "Write", {"file_path": str(tmp / "note.md"), "content": "x"})
     cp.write_text(fm.replace("plan_approved: false", "plan_approved: true"))
     t("edit after approval", "pass", "Write", {"file_path": str(repo / "A.cs"), "content": "x"})
+    cp.write_text(fm.replace("plan_approved: false", "plan_approved: true").replace("status: active", "status: waiting_user"))
+    t("edit while waiting_user", "deny", "Write", {"file_path": str(repo / "A.cs"), "content": "x"})
+    t("agent while waiting_user", "deny", "Agent", {"prompt": "x", "description": "x"})
+    t("commit while waiting_user", "deny", B, {"command": "git commit -m x"})
+    t("checkpoint write while waiting_user", "pass", "Write", {"file_path": str(cp), "content": fm.replace("+00:00", "")})
+    t("edit outside repo while waiting_user", "pass", "Write", {"file_path": str(tmp / "note.md"), "content": "x"})
+    later = datetime.datetime.now() + datetime.timedelta(hours=2)
+    t("future last_updated", "deny", "Write", {"file_path": str(cp), "content": f"last_updated: \"{later:%Y-%m-%dT%H:%M:%S}\"\n"})
+    t("future trace header", "deny", "Edit", {"file_path": str(state / "PROJ-1.trace.md"), "old_string": "a",
+                                             "new_string": f"## {later:%Y-%m-%d %H:%M} · GREEN → DOCUMENTED\n"})
+    t("current trace header", "pass", "Edit", {"file_path": str(state / "PROJ-1.trace.md"), "old_string": "a",
+                                              "new_string": f"## {datetime.datetime.now():%Y-%m-%d %H:%M} · GREEN → DOCUMENTED\n"})
     cp.unlink()
 
     cfg.write_text(json.dumps({"work_item": {"prefix": "#", "tool": "gh"}, "review_request": {"tool": "gh"}}))

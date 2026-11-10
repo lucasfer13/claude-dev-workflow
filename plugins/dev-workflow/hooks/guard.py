@@ -242,6 +242,7 @@ def check_bash(cmd, cwd):
         elif sub == "add":
             added_in_cmd = True
         elif sub == "commit":
+            check_waiting(where)
             if CFG["attribution"] and ATTRIBUTION.search(cmd):
                 decide("deny", "The commit message carries an attribution trailer (Co-Authored-By / Generated with). Remove it (§8).")
             if "--amend" in rest and pushed(where):
@@ -379,6 +380,65 @@ def check_plan(inp):
             decide("ask", f"{cp.stem} has plan_approved: false (§7). No repo edits before gate #1. Continue anyway?")
 
 
+# ---------- dev-state: stale waiting_user, invented times ----------
+
+FUTURE_SLACK = datetime.timedelta(minutes=5)
+STAMP = re.compile(r'^last_updated:\s*"?([0-9T:+.\- ]+?)"?\s*$', re.M)
+TRACE_HEADER = re.compile(r"^## (\d{4}-\d{2}-\d{2} \d{2}:\d{2})", re.M)
+
+
+def waiting_checkpoint(top):
+    """Fresh checkpoint of this repo still in waiting_user, i.e. the answer was never recorded (§19)."""
+    now = datetime.datetime.now()
+    for cp in DEV_STATE.glob("*/*.md"):
+        if cp.name.endswith(".trace.md"):
+            continue
+        fm = frontmatter(cp)
+        if fm.get("status") != "waiting_user" or norm(fm.get("repo_root", "")) != top:
+            continue
+        try:
+            updated = datetime.datetime.fromisoformat(fm.get("last_updated", "")[:19])
+        except ValueError:
+            continue
+        if (now - updated).days < 1:
+            return cp.stem
+    return None
+
+
+def check_waiting(where):
+    top = git(where, "rev-parse", "--show-toplevel")
+    if not top:
+        return
+    stem = waiting_checkpoint(norm(top.strip()))
+    if stem:
+        decide("deny", f"{stem} is still in status: waiting_user. If the user already answered, write status: active "
+                       "in the checkpoint before working on (§19); otherwise wait for the answer.")
+
+
+def check_times(inp):
+    """Denies a checkpoint or trace write stamped in the future: times come from the clock, never invented."""
+    fp = inp.get("file_path") or ""
+    if norm(str(DEV_STATE)) not in norm(fp):
+        return
+    text = inp.get("content") or inp.get("new_string") or ""
+    text += "".join(e.get("new_string", "") for e in inp.get("edits") or [])
+    now = datetime.datetime.now().astimezone()
+    for raw in STAMP.findall(text):
+        try:
+            t = datetime.datetime.fromisoformat(raw.strip().replace(" ", "T"))
+        except ValueError:
+            continue
+        t = t if t.tzinfo else t.astimezone()
+        if t - now > FUTURE_SLACK:
+            decide("deny", f"last_updated {raw.strip()} is in the future (now {now:%Y-%m-%d %H:%M}). "
+                           "Take the time from the clock (`date`), never invent it (§19).")
+    for raw in TRACE_HEADER.findall(text):
+        t = datetime.datetime.strptime(raw, "%Y-%m-%d %H:%M").astimezone()
+        if t - now > FUTURE_SLACK:
+            decide("deny", f"Trace header {raw} is in the future (now {now:%Y-%m-%d %H:%M}). "
+                           "Take the time from the clock (`date`), never invent it (§21).")
+
+
 def main():
     try:
         payload = json.load(sys.stdin.buffer)
@@ -389,11 +449,19 @@ def main():
     if tool == "Bash":
         check_bash(inp.get("command", ""), payload.get("cwd") or os.getcwd())
     elif tool in ("Edit", "Write", "NotebookEdit", "MultiEdit"):
+        check_times(inp)
         check_plan(inp)
+        fp = inp.get("file_path") or inp.get("notebook_path")
+        if fp and norm(str(DEV_STATE)) not in norm(fp):
+            d = pathlib.Path(fp).parent
+            while not d.exists() and d != d.parent:
+                d = d.parent
+            check_waiting(d)
     elif tool.startswith("mcp__"):
         check_mcp(tool, inp)
     elif tool in ("Agent", "Task"):
         check_agent(inp)
+        check_waiting(pathlib.Path(payload.get("cwd") or os.getcwd()))
 
 
 if __name__ == "__main__":
